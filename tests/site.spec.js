@@ -46,10 +46,13 @@ test.describe('Navigation', () => {
 test.describe('Lightbox', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    // Scroll the last artwork (Blue Lungs) into view so IntersectionObserver triggers
+    await page.locator('.artwork:last-child').scrollIntoViewIfNeeded();
+    await page.locator('.artwork:last-child.visible').waitFor();
   });
 
   test('real image opens lightbox with correct alt text', async ({ page }) => {
-    const artworkBtn = page.locator('.artwork-image').first();
+    const artworkBtn = page.locator('.artwork:last-child .artwork-image');
     await artworkBtn.click();
 
     const lightbox = page.locator('.lightbox');
@@ -59,15 +62,24 @@ test.describe('Lightbox', () => {
     await expect(lightboxImg).toHaveAttribute('alt', /Lungs filled with Blue Smoke/);
   });
 
+  test('lightbox shows artwork title and details', async ({ page }) => {
+    await page.locator('.artwork:last-child .artwork-image').click();
+    await expect(page.locator('.lightbox')).toHaveClass(/active/);
+
+    const lightboxInfo = page.locator('#lightbox-info');
+    await expect(lightboxInfo).toContainText('Lungs filled with Blue Smoke');
+    await expect(lightboxInfo).toContainText('Acrylic on Canvas');
+  });
+
   test('placeholder does not open lightbox', async ({ page }) => {
-    // Click the second artwork (placeholder)
-    await page.locator('.artwork-image').nth(1).click();
+    // Click the first artwork (placeholder)
+    await page.locator('.artwork-image').first().click();
     const lightbox = page.locator('.lightbox');
     await expect(lightbox).not.toHaveClass(/active/);
   });
 
   test('Escape closes lightbox', async ({ page }) => {
-    await page.locator('.artwork-image').first().click();
+    await page.locator('.artwork:last-child .artwork-image').click();
     await expect(page.locator('.lightbox')).toHaveClass(/active/);
 
     await page.keyboard.press('Escape');
@@ -75,7 +87,7 @@ test.describe('Lightbox', () => {
   });
 
   test('close button closes lightbox', async ({ page }) => {
-    await page.locator('.artwork-image').first().click();
+    await page.locator('.artwork:last-child .artwork-image').click();
     await expect(page.locator('.lightbox')).toHaveClass(/active/);
 
     await page.getByRole('button', { name: 'Close lightbox' }).click();
@@ -83,7 +95,7 @@ test.describe('Lightbox', () => {
   });
 
   test('focus returns to trigger after close', async ({ page }) => {
-    const artworkBtn = page.locator('.artwork-image').first();
+    const artworkBtn = page.locator('.artwork:last-child .artwork-image');
     await artworkBtn.click();
     await expect(page.locator('.lightbox')).toHaveClass(/active/);
 
@@ -92,7 +104,7 @@ test.describe('Lightbox', () => {
   });
 
   test('focus trap keeps focus on close button', async ({ page }) => {
-    await page.locator('.artwork-image').first().click();
+    await page.locator('.artwork:last-child .artwork-image').click();
     const closeBtn = page.getByRole('button', { name: 'Close lightbox' });
     await expect(closeBtn).toBeFocused();
 
@@ -184,10 +196,10 @@ test.describe('Smoke', () => {
     expect(errors).toEqual([]);
   });
 
-  test('gallery renders 4 artworks', async ({ page }) => {
+  test('gallery renders 6 artworks', async ({ page }) => {
     await page.goto('/');
     const artworks = page.locator('.artwork');
-    await expect(artworks).toHaveCount(4);
+    await expect(artworks).toHaveCount(6);
   });
 
   test('footer has copyright', async ({ page }) => {

@@ -67,21 +67,11 @@
 
     <main>
     <section class="gallery" id="gallery" aria-label="Gallery">
-        <h2 class="sr-only">Gallery</h2>
+        <div class="gallery-header">
+            <p class="subtitle">Portfolio</p>
+            <h2>Gallery</h2>
+        </div>
         <div class="gallery-grid">
-            <article class="artwork">
-                <div class="artwork-image">
-                    <img src="/src/images/blue-lungs.jpg" alt="Lungs filled with Blue Smoke – acrylic painting of lungs in blue tones" width="800" height="1000" loading="lazy" decoding="async">
-                </div>
-                <div class="artwork-info">
-                    <h3>Lungs filled with Blue Smoke</h3>
-                    <div class="artwork-details">
-                        Acrylic on Canvas<br>
-                        2025
-                    </div>
-                </div>
-            </article>
-
             <article class="artwork">
                 <div class="artwork-image">
                     <div class="placeholder-image">
@@ -129,6 +119,51 @@
                     </div>
                 </div>
             </article>
+
+            <article class="artwork">
+                <div class="artwork-image">
+                    <div class="placeholder-image">
+                        Your painting image here<br>
+                        <small style="font-size: 0.8em; margin-top: 0.5rem; display: block;">Replace with your photo</small>
+                    </div>
+                </div>
+                <div class="artwork-info">
+                    <h3>Untitled III</h3>
+                    <div class="artwork-details">
+                        Abstract, Acrylic<br>
+                        2025
+                    </div>
+                </div>
+            </article>
+
+            <article class="artwork">
+                <div class="artwork-image">
+                    <div class="placeholder-image">
+                        Your painting image here<br>
+                        <small style="font-size: 0.8em; margin-top: 0.5rem; display: block;">Replace with your photo</small>
+                    </div>
+                </div>
+                <div class="artwork-info">
+                    <h3>Organ Series: Brain</h3>
+                    <div class="artwork-details">
+                        Purple on Black, Acrylic<br>
+                        2025
+                    </div>
+                </div>
+            </article>
+
+            <article class="artwork">
+                <div class="artwork-image">
+                    <img src="/src/images/blue-lungs.jpg" alt="Lungs filled with Blue Smoke – acrylic painting of lungs in blue tones" width="800" height="1000" loading="lazy" decoding="async">
+                </div>
+                <div class="artwork-info">
+                    <h3>Lungs filled with Blue Smoke</h3>
+                    <div class="artwork-details">
+                        Acrylic on Canvas<br>
+                        2025
+                    </div>
+                </div>
+            </article>
         </div>
     </section>
 
@@ -154,7 +189,10 @@
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
         <button class="lightbox-close" aria-label="Close lightbox">&times;</button>
-        <img id="lightbox-img" src="" alt="">
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="">
+            <div class="lightbox-info" id="lightbox-info"></div>
+        </div>
     </div>
 </body>
 </html>

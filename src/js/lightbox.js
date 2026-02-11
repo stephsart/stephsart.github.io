@@ -63,6 +63,12 @@ function open(element) {
   triggerElement = element;
   lightboxImg.src = img.src;
   lightboxImg.alt = img.alt;
+
+  const artwork = element.closest('.artwork');
+  const info = artwork ? artwork.querySelector('.artwork-info') : null;
+  const lightboxInfo = document.getElementById('lightbox-info');
+  lightboxInfo.innerHTML = info ? info.innerHTML : '';
+
   lightbox.classList.add('active');
 
   // Focus the close button after opening
@@ -74,6 +80,7 @@ function open(element) {
 function close() {
   const lightbox = document.getElementById('lightbox');
   lightbox.classList.remove('active');
+  document.getElementById('lightbox-info').innerHTML = '';
 
   // Return focus to trigger element
   if (triggerElement) {

@@ -201,16 +201,36 @@ h1 {
     padding: 0 2rem 6rem;
 }
 
+.gallery-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.gallery-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.gallery-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+}
+
 .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 4rem;
+    column-count: 3;
+    column-gap: 2rem;
 }
 
 .artwork {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.6s ease, transform 0.6s ease;
+    break-inside: avoid;
+    margin-bottom: 2rem;
 }
 
 .artwork.visible {
@@ -220,25 +240,55 @@ h1 {
 
 .artwork-image {
     width: 100%;
-    aspect-ratio: 4/5;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    margin-bottom: 1.5rem;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
 }
 
-.artwork-image:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+.artwork-image:has(.placeholder-image) {
+    aspect-ratio: 1/1;
+}
+
+.artwork-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.artwork-image::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='white' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat center;
+    background-size: contain;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.artwork-image:hover::after,
+.artwork-image:hover::before {
+    opacity: 1;
 }
 
 .artwork-image img {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: cover;
     display: block;
+}
+
+.artwork-info {
+    display: none;
 }
 
 .artwork-info h3 {
@@ -324,11 +374,36 @@ footer {
     opacity: 1;
 }
 
-.lightbox img {
+.lightbox-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     max-width: 90%;
     max-height: 90vh;
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 75vh;
     object-fit: contain;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.lightbox-info {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.lightbox-info h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 0.25rem;
+}
+
+.lightbox-info .artwork-details {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
 .lightbox-close {
@@ -369,6 +444,12 @@ footer {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .gallery-grid {
+        column-count: 2;
+    }
+}
+
 @media (max-width: 768px) {
     header {
         padding: 3rem 1.5rem 1.5rem;
@@ -392,8 +473,7 @@ footer {
     }
 
     .gallery-grid {
-        grid-template-columns: 1fr;
-        gap: 3rem;
+        column-count: 1;
     }
 
     .about, .contact {
