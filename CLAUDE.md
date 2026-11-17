@@ -30,7 +30,7 @@ index.html               # Vite entry point
 ```
 
 - `index.html` links external CSS/JS via Vite (`<script type="module" src="/src/js/main.js">`)
-- Google Fonts loaded externally (Cormorant Garamond for headings, Work Sans for body text)
+- Fonts are self-hosted via `@fontsource` packages imported in `main.js` (Cormorant Garamond for headings, Work Sans for body text, latin subset); the page makes no third-party requests
 - The sixth gallery entry repeats `blue-lungs` as a stand-in until a sixth painting is photographed
 
 ## Commands
@@ -62,6 +62,7 @@ npm run import-image -- "<photo>" <kebab-name>   # Add or replace a painting's m
 - All animation and smooth scrolling is opt-in under `prefers-reduced-motion: no-preference`; scrolling is plain anchors plus CSS `scroll-behavior`
 - Floating hamburger menu (`<nav class="floating-nav">`) with z-index layering: overlay (899) < hamburger (910); the lightbox sits in the browser's top layer. The closed menu is `visibility: hidden` so its links are not focusable
 - Skip link and `<main>` landmark for accessibility; `aria-label` on all sections
+- A Content-Security-Policy `<meta>` is injected by `vite.config.js` in production builds only (the dev server needs inline styles and a websocket). Anything new the page loads must come from its own origin or the policy must be widened there
 
 ## SEO
 
@@ -74,7 +75,7 @@ npm run import-image -- "<photo>" <kebab-name>   # Add or replace a painting's m
 ## CI/CD
 
 GitHub Actions workflow (`.github/workflows/deploy.yml`):
-1. Generates images and builds with Vite (Node 24)
+1. Generates images and builds with Vite (Node 24); only the deploy job has `pages: write`
 2. Runs Playwright tests (Chromium, desktop + mobile viewports)
 3. Deploys `dist/` to GitHub Pages on push to `main`
 

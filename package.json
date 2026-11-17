@@ -15,8 +15,10 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.0",
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/work-sans": "^5.3.0",
     "@playwright/test": "^1.49.0",
-    "sharp": "^0.33.0",
+    "sharp": "^0.35.5",
     "vite": "^6.0.0"
   }
 }

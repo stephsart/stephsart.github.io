@@ -1,12 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-// Keep the suite independent of third-party servers. The Google Fonts stylesheet
-// blocks rendering and scripts until it answers, so a slow response stalls tests.
-test.beforeEach(async ({ context }) => {
-  await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
-});
-
 const firstPainting = (page) => page.locator('.artwork').first().locator('.artwork-image');
 const lightbox = (page) => page.getByRole('dialog');
 
@@ -260,6 +254,30 @@ test.describe('Smoke', () => {
     page.on('pageerror', (err) => errors.push(err.message));
     await page.goto('/');
     expect(errors).toEqual([]);
+  });
+
+  test('everything loads from the site itself, within its content security policy', async ({ page, baseURL }) => {
+    const requests = [];
+    const consoleErrors = []; // a blocked resource is reported here, not as a page error
+    page.on('request', (request) => requests.push(request.url()));
+    page.on('console', (message) => message.type() === 'error' && consoleErrors.push(message.text()));
+
+    await page.goto('/');
+    await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute(
+      'content',
+      /default-src 'none'/
+    );
+
+    // Exercise the parts that load more: fonts, the lightbox and its large image.
+    await page.evaluate(() => document.fonts.ready);
+    await firstPainting(page).click();
+    await expect(lightbox(page).getByRole('img')).toHaveAttribute('srcset', /2000w/);
+    await page.waitForLoadState('networkidle');
+
+    const thirdParty = requests.filter((url) => !url.startsWith(baseURL) && !url.startsWith('data:'));
+    expect(thirdParty).toEqual([]);
+    expect(requests.some((url) => /\.woff2$/.test(url))).toBe(true);
+    expect(consoleErrors).toEqual([]);
   });
 
   test('gallery renders 6 artworks', async ({ page }) => {
