@@ -241,7 +241,7 @@ test.describe('SEO', () => {
 
   test('canonical URL present', async ({ page }) => {
     const canonical = page.locator('link[rel="canonical"]');
-    await expect(canonical).toHaveAttribute('href', 'https://stephsart.github.io/');
+    await expect(canonical).toHaveAttribute('href', 'https://stephaniekleine.com/');
   });
 
   test('sitemap named in robots.txt exists', async ({ request }) => {

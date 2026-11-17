@@ -67,7 +67,8 @@ npm run import-image -- "<photo>" <kebab-name>   # Add or replace a painting's m
 
 - Meta description, Open Graph, and Twitter Card tags in `<head>`
 - JSON-LD structured data (WebSite + Person schema)
-- Canonical URL: `https://stephsart.github.io/`
+- Canonical URL: `https://stephaniekleine.com/`
+- The custom domain is set in the repo's Pages settings (not a `CNAME` file); DNS is at GoDaddy: four `A` records for `@` to GitHub Pages and `www` as a `CNAME` to `stephsart.github.io`. The old `stephsart.github.io` address redirects to the domain
 - Link-preview image: `/images/og-image.jpg` (generated); `sitemap.xml` is listed in `robots.txt`
 
 ## CI/CD

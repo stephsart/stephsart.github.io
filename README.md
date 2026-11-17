@@ -1,6 +1,6 @@
 # Stephanie Kleine — Contemporary Paintings
 
-Portfolio site for the painter Stephanie Kleine: <https://stephsart.github.io/>
+Portfolio site for the painter Stephanie Kleine: <https://stephaniekleine.com/>
 
 A single static page built with [Vite](https://vite.dev), with no framework and no runtime dependencies. GitHub Actions builds it, runs the tests and deploys to GitHub Pages on every push to `main`.
 
