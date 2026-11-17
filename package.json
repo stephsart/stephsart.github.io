@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "test": "playwright test",
     "optimize-images": "node scripts/optimize-images.mjs",
-    "import-image": "node scripts/import-image.mjs"
+    "import-image": "node scripts/import-image.mjs",
+    "set-contact-email": "node scripts/set-contact-email.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
