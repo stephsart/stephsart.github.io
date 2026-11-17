@@ -1,3 +1,9 @@
+// Fonts ship with the site (latin subset), so no request leaves this origin.
+import '@fontsource/cormorant-garamond/latin-300.css';
+import '@fontsource/cormorant-garamond/latin-400.css';
+import '@fontsource/cormorant-garamond/latin-500.css';
+import '@fontsource/work-sans/latin-300.css';
+import '@fontsource/work-sans/latin-400.css';
 import '../css/style.css';
 import * as lightbox from './lightbox.js';
 import * as navigation from './navigation.js';
