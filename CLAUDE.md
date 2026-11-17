@@ -42,6 +42,7 @@ npm run preview          # Preview production build
 npm test                 # Run Playwright E2E tests (needs a build first)
 npm run optimize-images  # Regenerate public/images (runs automatically before dev/build)
 npm run import-image -- "<photo>" <kebab-name>   # Add or replace a painting's master
+npm run set-contact-email -- name@example.com      # Change the footer's contact address
 ```
 
 ## Images
@@ -51,6 +52,12 @@ npm run import-image -- "<photo>" <kebab-name>   # Add or replace a painting's m
 - To add a painting, import it, then copy an `<article class="artwork">` block in `index.html` and change the name, alt text, caption and the `height` attribute (`960 × master height / master width`).
 - The grid uses the 480/960/1440 widths via `srcset`; the lightbox uses 960/1440/2000 via `data-srcset` on the link. Masters must be at least 2000px wide or the build fails.
 - `og-image.jpg` (link preview) is generated from the master named in `image-config.mjs`.
+
+## Contact Address
+
+- The address must never appear in plain text in any committed or served file: the repo is public and harvesters scan both. `index.html` holds it encoded in `data-email` on `<span class="contact-email">`, with a written-out fallback (`name [at] domain`) as the text.
+- `src/js/contact.js` decodes it (`src/js/email-codec.js`) and swaps the span for a `mailto:` link. If JavaScript is off or fails to load, the fallback stays readable.
+- Change it only with `npm run set-contact-email`; a test fails if anything the server sends contains an address-shaped string.
 
 ## Key Design Patterns
 

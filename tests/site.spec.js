@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { decode, encode, fallbackText } from '../src/js/email-codec.js';
 
 const firstPainting = (page) => page.locator('.artwork').first().locator('.artwork-image');
 const lightbox = (page) => page.getByRole('dialog');
@@ -203,6 +204,12 @@ test.describe('Without JavaScript', () => {
     await expect(page.locator('.about-content')).toHaveCSS('opacity', '1');
     await expect(firstPainting(page)).toHaveAttribute('href', /blue-lungs-2000\.webp$/);
   });
+
+  test('the contact address is written out instead of linked', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('footer .contact-email')).toHaveText(/^\S+ \[at\] \S+\.\S+$/);
+    await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(0);
+  });
 });
 
 // --- SEO ---
@@ -289,10 +296,43 @@ test.describe('Smoke', () => {
     await page.goto('/');
     const footer = page.locator('footer');
     await expect(footer).toContainText('© 2026 Stephanie Kleine');
-    await expect(footer.getByRole('link', { name: 'art@kleine.me' })).toHaveAttribute(
-      'href',
-      'mailto:art@kleine.me'
-    );
+
+    const link = footer.locator('a.contact-email');
+    const address = await link.textContent();
+    expect(address).toMatch(/^[^@\s]+@[^@\s]+\.[a-z]+$/);
+    await expect(link).toHaveAttribute('href', `mailto:${address}`);
+  });
+});
+
+// --- Contact address ---
+
+test.describe('Contact address', () => {
+  // Anything shaped like name@domain.tld. CSS at-rules such as "}@font-face" do not match.
+  const ADDRESS = /[\w.+-]+@[\w-]+(\.[\w-]+)*\.[a-z]{2,}/i;
+
+  test('no address appears in anything the server sends', async ({ page }) => {
+    const bodies = [];
+    page.on('response', async (response) => {
+      const type = response.headers()['content-type'] ?? '';
+      if (/html|javascript|css|xml|text/.test(type)) {
+        bodies.push({ url: response.url(), body: await response.text() });
+      }
+    });
+
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    expect(bodies.map((b) => b.url)).toContainEqual(expect.stringMatching(/\.js$/));
+    for (const { url, body } of bodies) {
+      expect(body.match(ADDRESS)?.[0] ?? null, url).toBeNull();
+    }
+  });
+
+  test('the encoding round-trips unusual addresses', () => {
+    for (const address of ['first.last+tag@sub.example.co.uk', 'Ünïcødé@exämple.de']) {
+      expect(decode(encode(address))).toBe(address);
+      expect(fallbackText(address)).not.toContain('@');
+    }
   });
 });
 

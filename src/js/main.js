@@ -5,6 +5,7 @@ import '@fontsource/cormorant-garamond/latin-500.css';
 import '@fontsource/work-sans/latin-300.css';
 import '@fontsource/work-sans/latin-400.css';
 import '../css/style.css';
+import * as contact from './contact.js';
 import * as lightbox from './lightbox.js';
 import * as navigation from './navigation.js';
 
@@ -42,6 +43,7 @@ function initScrollToTop() {
   button.addEventListener('click', () => hero.scrollIntoView());
 }
 
+contact.init();
 lightbox.init();
 navigation.init();
 initScrollReveal();

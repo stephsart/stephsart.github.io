@@ -24,6 +24,7 @@ npm test
 - **`index.html`** holds all content. Each painting is a link to its large image, so the gallery works without JavaScript.
 - **`src/css/style.css`** holds all styles. Animation and smooth scrolling only apply when the visitor has not asked for reduced motion.
 - **`src/js/`** adds the lightbox (a native `<dialog>`), the menu and the scroll reveal.
+- **The contact address is not in the page source.** It is stored encoded and turned into a link in the browser; without JavaScript, visitors see it written out. Change it with `npm run set-contact-email -- name@example.com`.
 - **Nothing loads from other servers.** Fonts are bundled, and the production build carries a content security policy that only allows the site's own files.
 - **`src/images/`** holds one master JPEG per painting. The sizes the site serves are generated into `public/images/` before every dev start and build, and are not committed.
 
