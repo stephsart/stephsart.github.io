@@ -42,7 +42,7 @@ test.describe('Navigation', () => {
 
     await expect(page.locator('.nav-overlay')).not.toHaveClass(/active/);
     await expect(page).toHaveURL(/#about$/);
-    await expect(page.getByRole('heading', { name: 'About the Artist' })).toBeInViewport();
+    await expect(page.getByRole('heading', { name: 'About', exact: true })).toBeInViewport();
   });
 
   test('Escape closes the menu and returns focus to the hamburger', async ({ page }) => {
@@ -66,8 +66,8 @@ test.describe('Lightbox', () => {
   });
 
   test('shows the painting with its alt text, title and details', async ({ page }) => {
-    await expect(lightbox(page).getByRole('img')).toHaveAttribute('alt', /Lungs filled with Blue Smoke/);
-    await expect(lightbox(page).getByRole('heading')).toHaveText('Lungs filled with Blue Smoke');
+    await expect(lightbox(page).getByRole('img')).toHaveAttribute('alt', /Healing Lungs/);
+    await expect(lightbox(page).getByRole('heading')).toHaveText('Healing Lungs');
     await expect(lightbox(page)).toContainText('Acrylic on Canvas');
     await expect(lightbox(page)).toContainText('2025');
   });
