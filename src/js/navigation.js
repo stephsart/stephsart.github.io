@@ -1,44 +1,40 @@
+// The links are plain in-page anchors; scrolling is left to the browser
+// (scroll-behavior in style.css). This module only opens and closes the menu
+// and gives the header its background once the hero has scrolled away.
+
 export function init() {
   const hamburger = document.getElementById('hamburger');
-  const navOverlay = document.getElementById('nav-overlay');
-  const navLinks = navOverlay.querySelectorAll('a');
+  const overlay = document.getElementById('nav-overlay');
+  const nav = document.getElementById('floating-nav');
+  const hero = document.querySelector('.hero');
+  if (!hamburger || !overlay) return;
+
+  function setOpen(open) {
+    hamburger.classList.toggle('active', open);
+    overlay.classList.toggle('active', open);
+    hamburger.setAttribute('aria-expanded', String(open));
+  }
 
   hamburger.addEventListener('click', () => {
-    const isOpen = hamburger.classList.toggle('active');
-    navOverlay.classList.toggle('active');
-    hamburger.setAttribute('aria-expanded', String(isOpen));
-
-    if (isOpen) {
-      // Focus first nav link when menu opens
-      navLinks[0]?.focus();
-    }
+    const open = hamburger.getAttribute('aria-expanded') !== 'true';
+    setOpen(open);
+    if (open) overlay.querySelector('a')?.focus();
   });
 
-  // Smooth scroll for navigation links
-  navLinks.forEach((anchor) => {
-    anchor.addEventListener('click', (e) => {
-      e.preventDefault();
-      closeMenu();
-      const target = document.querySelector(anchor.getAttribute('href'));
-      if (target) {
-        setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth' });
-        }, 150);
-      }
-    });
+  overlay.addEventListener('click', (event) => {
+    if (event.target.closest('a')) setOpen(false);
   });
 
-  // Close menu on Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && navOverlay.classList.contains('active')) {
-      closeMenu();
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && overlay.classList.contains('active')) {
+      setOpen(false);
       hamburger.focus();
     }
   });
 
-  function closeMenu() {
-    hamburger.classList.remove('active');
-    navOverlay.classList.remove('active');
-    hamburger.setAttribute('aria-expanded', 'false');
+  if (hero && nav) {
+    new IntersectionObserver(([entry]) => {
+      nav.classList.toggle('scrolled', !entry.isIntersecting);
+    }).observe(hero);
   }
 }

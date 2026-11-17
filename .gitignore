@@ -1,5 +1,15 @@
 .DS_Store
 node_modules/
 dist/
-.playwright-mcp/
 *.log
+
+# Generated from src/images by scripts/optimize-images.mjs
+public/images/
+
+# Playwright output
+playwright-report/
+test-results/
+.playwright-mcp/
+
+# Personal editor/agent settings
+.claude/settings.local.json
