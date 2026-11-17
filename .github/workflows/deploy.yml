@@ -18,8 +18,8 @@ concurrency:
 
 jobs:
   build-and-test:
-    # Pinned: ubuntu-latest moved to 26.04, which the locked Playwright (1.58)
-    # cannot install browsers on. Move this forward together with Playwright.
+    # Pinned so a new runner image cannot break the browser install unannounced,
+    # as happened when ubuntu-latest moved to 26.04. Raise it deliberately.
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

@@ -289,9 +289,9 @@ test.describe('Smoke', () => {
     await page.goto('/');
     const footer = page.locator('footer');
     await expect(footer).toContainText('© 2026 Stephanie Kleine');
-    await expect(footer.getByRole('link', { name: 'stephanie@kleine.me' })).toHaveAttribute(
+    await expect(footer.getByRole('link', { name: 'art@kleine.me' })).toHaveAttribute(
       'href',
-      'mailto:stephanie@kleine.me'
+      'mailto:art@kleine.me'
     );
   });
 });
