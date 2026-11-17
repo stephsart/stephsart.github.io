@@ -12,7 +12,10 @@
     <!-- Open Graph -->
     <meta property="og:title" content="Stephanie Kleine - Contemporary Paintings">
     <meta property="og:description" content="Contemporary paintings by Stephanie Kleine. Original acrylic artwork exploring human organs, abstract forms, and emotional expression.">
-    <meta property="og:image" content="https://stephsart.github.io/assets/blue-lungs.jpg">
+    <meta property="og:image" content="https://stephsart.github.io/images/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Lungs filled with Blue Smoke, a painting of lungs in bright blue lines on a dark canvas">
     <meta property="og:url" content="https://stephsart.github.io/">
     <meta property="og:type" content="website">
 
@@ -20,7 +23,8 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Stephanie Kleine - Contemporary Paintings">
     <meta name="twitter:description" content="Contemporary paintings by Stephanie Kleine. Original acrylic artwork exploring human organs, abstract forms, and emotional expression.">
-    <meta name="twitter:image" content="https://stephsart.github.io/assets/blue-lungs.jpg">
+    <meta name="twitter:image" content="https://stephsart.github.io/images/og-image.jpg">
+    <meta name="twitter:image:alt" content="Lungs filled with Blue Smoke, a painting of lungs in bright blue lines on a dark canvas">
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
@@ -47,152 +51,174 @@
 <body>
     <a href="#gallery" class="skip-link">Skip to gallery</a>
 
-    <nav class="floating-nav" id="floating-nav">
-        <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+    <nav class="floating-nav" id="floating-nav" aria-label="Main">
+        <a href="#hero" class="site-logo" aria-label="Stephanie Kleine - back to top">SK</a>
+        <button class="hamburger" id="hamburger" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-overlay">
             <span></span>
             <span></span>
             <span></span>
         </button>
         <div class="nav-overlay" id="nav-overlay">
+            <a href="#hero">Home</a>
             <a href="#gallery">Gallery</a>
             <a href="#about">About</a>
             <a href="#contact">Contact</a>
         </div>
     </nav>
 
-    <header>
-        <h1>Stephanie Kleine</h1>
-        <p class="subtitle">Contemporary Paintings</p>
+    <header class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-brackets">
+                <h1>Stephanie Kleine</h1>
+                <p class="subtitle">Contemporary Paintings</p>
+            </div>
+        </div>
+        <div class="hero-scroll-down" aria-hidden="true">
+            <span class="scroll-arrow"></span>
+        </div>
     </header>
 
     <main>
-    <section class="gallery" id="gallery" aria-label="Gallery">
-        <div class="gallery-header">
-            <p class="subtitle">Portfolio</p>
-            <h2>Gallery</h2>
-        </div>
-        <div class="gallery-grid">
-            <article class="artwork">
-                <div class="artwork-image">
-                    <div class="placeholder-image">
-                        Your painting image here<br>
-                        <small style="font-size: 0.8em; margin-top: 0.5rem; display: block;">Replace with your photo</small>
+        <section class="gallery" id="gallery" aria-label="Gallery">
+            <div class="gallery-header">
+                <p class="subtitle">Portfolio</p>
+                <h2>Gallery</h2>
+            </div>
+            <!-- Each painting links to its large image, so it still opens without JavaScript.
+                 lightbox.js turns the link into an in-page viewer and reads data-srcset.
+                 The sizes values are the column widths of .gallery-grid at its 1, 2 and 3 column layouts. -->
+            <div class="gallery-grid">
+                <article class="artwork">
+                    <a class="artwork-image" href="/images/blue-lungs-2000.webp"
+                       data-srcset="/images/blue-lungs-960.webp 960w, /images/blue-lungs-1440.webp 1440w, /images/blue-lungs-2000.webp 2000w">
+                        <img src="/images/blue-lungs-960.webp"
+                             srcset="/images/blue-lungs-480.webp 480w, /images/blue-lungs-960.webp 960w, /images/blue-lungs-1440.webp 1440w"
+                             sizes="(max-width: 768px) calc(100vw - 3rem), (max-width: 1024px) calc(50vw - 3rem), min(33.3vw - 2.7rem, 424px)"
+                             alt="Lungs filled with Blue Smoke – a pair of lungs and a windpipe drawn in flowing bright blue lines on a dark canvas"
+                             width="960" height="960" loading="lazy" decoding="async">
+                    </a>
+                    <div class="artwork-info">
+                        <h3>Lungs filled with Blue Smoke</h3>
+                        <p class="artwork-details">Acrylic on Canvas<br>2025</p>
                     </div>
-                </div>
-                <div class="artwork-info">
-                    <h3>Organ Series: Lungs</h3>
-                    <div class="artwork-details">
-                        Blue on Black, Acrylic<br>
-                        2023
-                    </div>
-                </div>
-            </article>
+                </article>
 
-            <article class="artwork">
-                <div class="artwork-image">
-                    <div class="placeholder-image">
-                        Your painting image here<br>
-                        <small style="font-size: 0.8em; margin-top: 0.5rem; display: block;">Replace with your photo</small>
+                <article class="artwork">
+                    <a class="artwork-image" href="/images/veins-of-life-2000.webp"
+                       data-srcset="/images/veins-of-life-960.webp 960w, /images/veins-of-life-1440.webp 1440w, /images/veins-of-life-2000.webp 2000w">
+                        <img src="/images/veins-of-life-960.webp"
+                             srcset="/images/veins-of-life-480.webp 480w, /images/veins-of-life-960.webp 960w, /images/veins-of-life-1440.webp 1440w"
+                             sizes="(max-width: 768px) calc(100vw - 3rem), (max-width: 1024px) calc(50vw - 3rem), min(33.3vw - 2.7rem, 424px)"
+                             alt="Veins of Life – dark veins running down from a deep red band into bright orange, where they fray into red and pale yellow strands"
+                             width="960" height="958" loading="lazy" decoding="async">
+                    </a>
+                    <div class="artwork-info">
+                        <h3>Veins of Life</h3>
+                        <p class="artwork-details">Acrylic on Canvas<br>2024</p>
                     </div>
-                </div>
-                <div class="artwork-info">
-                    <h3>Untitled II</h3>
-                    <div class="artwork-details">
-                        Abstract, Mixed Media<br>
-                        2024
-                    </div>
-                </div>
-            </article>
+                </article>
 
-            <article class="artwork">
-                <div class="artwork-image">
-                    <div class="placeholder-image">
-                        Your painting image here<br>
-                        <small style="font-size: 0.8em; margin-top: 0.5rem; display: block;">Replace with your photo</small>
+                <article class="artwork">
+                    <a class="artwork-image" href="/images/loving-heart-2000.webp"
+                       data-srcset="/images/loving-heart-960.webp 960w, /images/loving-heart-1440.webp 1440w, /images/loving-heart-2000.webp 2000w">
+                        <img src="/images/loving-heart-960.webp"
+                             srcset="/images/loving-heart-480.webp 480w, /images/loving-heart-960.webp 960w, /images/loving-heart-1440.webp 1440w"
+                             sizes="(max-width: 768px) calc(100vw - 3rem), (max-width: 1024px) calc(50vw - 3rem), min(33.3vw - 2.7rem, 424px)"
+                             alt="Loving Heart – an anatomical human heart drawn in fine red lines on a black canvas"
+                             width="960" height="960" loading="lazy" decoding="async">
+                    </a>
+                    <div class="artwork-info">
+                        <h3>Loving Heart</h3>
+                        <p class="artwork-details">Acrylic on Canvas<br>2023</p>
                     </div>
-                </div>
-                <div class="artwork-info">
-                    <h3>Organ Series: Heart</h3>
-                    <div class="artwork-details">
-                        Red on Black, Acrylic<br>
-                        2024
-                    </div>
-                </div>
-            </article>
+                </article>
 
-            <article class="artwork">
-                <div class="artwork-image">
-                    <div class="placeholder-image">
-                        Your painting image here<br>
-                        <small style="font-size: 0.8em; margin-top: 0.5rem; display: block;">Replace with your photo</small>
+                <article class="artwork">
+                    <a class="artwork-image" href="/images/boundaries-2000.webp"
+                       data-srcset="/images/boundaries-960.webp 960w, /images/boundaries-1440.webp 1440w, /images/boundaries-2000.webp 2000w">
+                        <img src="/images/boundaries-960.webp"
+                             srcset="/images/boundaries-480.webp 480w, /images/boundaries-960.webp 960w, /images/boundaries-1440.webp 1440w"
+                             sizes="(max-width: 768px) calc(100vw - 3rem), (max-width: 1024px) calc(50vw - 3rem), min(33.3vw - 2.7rem, 424px)"
+                             alt="Boundaries – horizontal bands of blue-grey, deep red and gold, divided by rough pale edges"
+                             width="960" height="960" loading="lazy" decoding="async">
+                    </a>
+                    <div class="artwork-info">
+                        <h3>Boundaries</h3>
+                        <p class="artwork-details">Acrylic on Canvas<br>2025</p>
                     </div>
-                </div>
-                <div class="artwork-info">
-                    <h3>Untitled III</h3>
-                    <div class="artwork-details">
-                        Abstract, Acrylic<br>
-                        2025
+                </article>
+
+                <article class="artwork">
+                    <a class="artwork-image" href="/images/exploration-2000.webp"
+                       data-srcset="/images/exploration-960.webp 960w, /images/exploration-1440.webp 1440w, /images/exploration-2000.webp 2000w">
+                        <img src="/images/exploration-960.webp"
+                             srcset="/images/exploration-480.webp 480w, /images/exploration-960.webp 960w, /images/exploration-1440.webp 1440w"
+                             sizes="(max-width: 768px) calc(100vw - 3rem), (max-width: 1024px) calc(50vw - 3rem), min(33.3vw - 2.7rem, 424px)"
+                             alt="Exploration – bold geometric shapes in red, yellow, green and blue around a circular opening"
+                             width="960" height="960" loading="lazy" decoding="async">
+                    </a>
+                    <div class="artwork-info">
+                        <h3>Exploration</h3>
+                        <p class="artwork-details">Acrylic on Canvas<br>2023</p>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <article class="artwork">
-                <div class="artwork-image">
-                    <div class="placeholder-image">
-                        Your painting image here<br>
-                        <small style="font-size: 0.8em; margin-top: 0.5rem; display: block;">Replace with your photo</small>
+                <!-- Stand-in: repeats the first painting until a sixth is photographed. -->
+                <article class="artwork">
+                    <a class="artwork-image" href="/images/blue-lungs-2000.webp"
+                       data-srcset="/images/blue-lungs-960.webp 960w, /images/blue-lungs-1440.webp 1440w, /images/blue-lungs-2000.webp 2000w">
+                        <img src="/images/blue-lungs-960.webp"
+                             srcset="/images/blue-lungs-480.webp 480w, /images/blue-lungs-960.webp 960w, /images/blue-lungs-1440.webp 1440w"
+                             sizes="(max-width: 768px) calc(100vw - 3rem), (max-width: 1024px) calc(50vw - 3rem), min(33.3vw - 2.7rem, 424px)"
+                             alt="Lungs filled with Blue Smoke – a pair of lungs and a windpipe drawn in flowing bright blue lines on a dark canvas"
+                             width="960" height="960" loading="lazy" decoding="async">
+                    </a>
+                    <div class="artwork-info">
+                        <h3>Lungs filled with Blue Smoke</h3>
+                        <p class="artwork-details">Acrylic on Canvas<br>2025</p>
                     </div>
-                </div>
-                <div class="artwork-info">
-                    <h3>Organ Series: Brain</h3>
-                    <div class="artwork-details">
-                        Purple on Black, Acrylic<br>
-                        2025
-                    </div>
-                </div>
-            </article>
+                </article>
+            </div>
+        </section>
 
-            <article class="artwork">
-                <div class="artwork-image">
-                    <img src="/src/images/blue-lungs.jpg" alt="Lungs filled with Blue Smoke – acrylic painting of lungs in blue tones" width="800" height="1000" loading="lazy" decoding="async">
-                </div>
-                <div class="artwork-info">
-                    <h3>Lungs filled with Blue Smoke</h3>
-                    <div class="artwork-details">
-                        Acrylic on Canvas<br>
-                        2025
-                    </div>
-                </div>
-            </article>
-        </div>
-    </section>
-
-    <section class="about" id="about" aria-label="About">
-        <h2>About the Work</h2>
-        <p>Art, especially painting, has been a therapeutic medium I've been leveraging since my teenage years. It helps me express and work through my emotions. I don't plan most of my artwork. I go with the flow and often end up in unexpected places.</p>
-        <p>I paint two styles. One is very colorful with different shapes and forms, very dynamic and abstract. The other is more straightforward, usually a black background with a human organ painted in a vibrant color. The organ is only painted with lines and resembles biological anatomy.</p>
-        <p>One of my most truest paintings is 'Lungs filled with Blue Smoke'. This piece reflects my journey from being a heavy smoker to quitting cigarettes.</p>
-    </section>
-
-    <section class="contact" id="contact" aria-label="Contact">
-        <h2>Interested in a Piece?</h2>
-        <p>For inquiries about purchasing artwork or commissions, please get in touch.</p>
-        <a href="mailto:hello@stephaniekleine.com" class="contact-email">hello@stephaniekleine.com</a>
-    </section>
-
+        <section class="about" id="about" aria-label="About">
+            <div class="about-content">
+                <p class="section-subtitle">About</p>
+                <h2>About the Artist</h2>
+                <p>Stephanie Kleine is a self-taught painter living in the greater Seattle area. She has been painting since her teenage years, and it always starts the same way: with a feeling she can't shake, or something that happened and won't leave her alone. There is no plan. No sketch. She grabs a brush, puts paint on a canvas and sees where it takes her.</p>
+                <p>She paints in two styles. One is loud: abstract and colorful, full of shapes and movement. Jackson Pollock and Saburo Murakami are two of her biggest idols. The other is quiet. A black background and a single human organ, drawn in fine lines of one bright color. Anatomy fascinates her. How a living body actually works. How much power a single organ holds over everything else.</p>
+                <p>She never knows when a painting is finished. It tortures her. Once the emotion is worked through, the painting still has to become something she enjoys looking at, and that is when her perfectionism shows up. She will work on the smallest detail for months without really changing anything. That is when she knows it is time to put the brush down.</p>
+                <p><em>Lungs filled with Blue Smoke</em> is one of her most honest paintings. She used to be a heavy smoker. Then she quit. This painting is that journey.</p>
+            </div>
+        </section>
     </main>
 
-    <footer>
-        <p>&copy; 2026 Stephanie Kleine. All rights reserved.</p>
+    <footer class="site-footer" id="contact" aria-label="Contact">
+        <div class="footer-content">
+            <p class="section-subtitle">Get in Touch</p>
+            <h2>Interested in a Piece?</h2>
+            <p>For inquiries about purchasing artwork or commissions, please get in touch.</p>
+            <a href="mailto:stephanie@kleine.me" class="contact-email">stephanie@kleine.me</a>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Stephanie Kleine. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
 
-    <!-- Lightbox -->
-    <div class="lightbox" id="lightbox">
-        <button class="lightbox-close" aria-label="Close lightbox">&times;</button>
-        <div class="lightbox-content">
-            <img id="lightbox-img" src="" alt="">
-            <div class="lightbox-info" id="lightbox-info"></div>
-        </div>
-    </div>
+    <!-- Lightbox: lightbox.js adds the <img> and fills the caption when a painting is opened. -->
+    <dialog class="lightbox" id="lightbox" aria-label="Artwork">
+        <form method="dialog">
+            <button class="lightbox-close" aria-label="Close lightbox">&times;</button>
+        </form>
+        <figure class="lightbox-content">
+            <figcaption class="lightbox-info"></figcaption>
+        </figure>
+    </dialog>
+
+    <button class="scroll-to-top" id="scroll-to-top" type="button" aria-label="Scroll to top">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
 </body>
 </html>

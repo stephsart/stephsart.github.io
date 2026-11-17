@@ -4,11 +4,14 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "predev": "npm run optimize-images",
     "dev": "vite",
+    "prebuild": "npm run optimize-images",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "playwright test",
     "optimize-images": "node scripts/optimize-images.mjs",
-    "test": "playwright test"
+    "import-image": "node scripts/import-image.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.0",

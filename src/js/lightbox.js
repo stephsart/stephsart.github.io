@@ -1,90 +1,65 @@
-let triggerElement = null;
+// Opens a painting in a native <dialog>. showModal() supplies the focus trap,
+// Escape-to-close and an inert page behind the viewer, and the close button is
+// a <form method="dialog"> submit, so none of that needs code here.
+
+// Mirrors the width of .lightbox-image in style.css for square paintings.
+const SIZES = 'min(90vw, 75vh)';
 
 export function init() {
-  const lightbox = document.getElementById('lightbox');
-  const closeBtn = lightbox.querySelector('.lightbox-close');
+  const dialog = document.getElementById('lightbox');
+  const grid = document.querySelector('.gallery-grid');
+  if (!dialog || !grid) return;
 
-  // Delegated click on artwork images
-  document.querySelector('.gallery-grid').addEventListener('click', (e) => {
-    const artworkImage = e.target.closest('.artwork-image');
-    if (!artworkImage) return;
-    open(artworkImage);
+  const caption = dialog.querySelector('.lightbox-info');
+  const image = new Image();
+  image.className = 'lightbox-image';
+  dialog.querySelector('.lightbox-content').prepend(image);
+
+  let trigger = null;
+
+  grid.addEventListener('click', (event) => {
+    const link = event.target.closest('.artwork-image');
+    const wantsNewTab = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+    if (!link || wantsNewTab) return;
+
+    event.preventDefault();
+    open(link);
   });
 
-  // Keyboard activation for artwork images
-  document.querySelector('.gallery-grid').addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const artworkImage = e.target.closest('.artwork-image');
-    if (!artworkImage) return;
-    e.preventDefault();
-    open(artworkImage);
+  // A click that lands on the dialog itself is a click on the backdrop.
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
   });
 
-  // Close on background click (but not on the image itself)
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox || e.target === closeBtn) {
-      close();
-    }
+  // Safari does not focus a link when it is clicked, so restore focus by hand.
+  dialog.addEventListener('close', () => {
+    trigger?.focus();
+    trigger = null;
   });
 
-  closeBtn.addEventListener('click', close);
+  function open(link) {
+    const thumbnail = link.querySelector('img');
+    const info = link.closest('.artwork').querySelector('.artwork-info');
+    trigger = link;
 
-  // Focus trap inside lightbox
-  lightbox.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') {
-      // Only the close button is focusable, so trap focus there
-      e.preventDefault();
-      closeBtn.focus();
-    }
-  });
+    // Show the grid image the browser already has, at the final size, then let
+    // the large file replace it once it has arrived. The browser keeps the
+    // current picture on screen while the new source loads.
+    image.removeAttribute('srcset');
+    image.removeAttribute('sizes');
+    image.alt = thumbnail.alt;
+    image.style.setProperty('--ratio', thumbnail.getAttribute('width') / thumbnail.getAttribute('height'));
+    image.src = thumbnail.currentSrc || thumbnail.src;
+    image
+      .decode()
+      .catch(() => {}) // a failed preview should not block the large image
+      .then(() => {
+        if (trigger !== link) return;
+        image.sizes = SIZES;
+        image.srcset = link.dataset.srcset || link.href;
+      });
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-      close();
-    }
-  });
-
-  // Add role="button" and tabindex to artwork images with real <img> tags
-  document.querySelectorAll('.artwork-image').forEach((el) => {
-    if (el.querySelector('img')) {
-      el.setAttribute('role', 'button');
-      el.setAttribute('tabindex', '0');
-    }
-  });
-}
-
-function open(element) {
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-  const img = element.querySelector('img');
-
-  if (!img) return;
-
-  triggerElement = element;
-  lightboxImg.src = img.src;
-  lightboxImg.alt = img.alt;
-
-  const artwork = element.closest('.artwork');
-  const info = artwork ? artwork.querySelector('.artwork-info') : null;
-  const lightboxInfo = document.getElementById('lightbox-info');
-  lightboxInfo.innerHTML = info ? info.innerHTML : '';
-
-  lightbox.classList.add('active');
-
-  // Focus the close button after opening
-  requestAnimationFrame(() => {
-    lightbox.querySelector('.lightbox-close').focus();
-  });
-}
-
-function close() {
-  const lightbox = document.getElementById('lightbox');
-  lightbox.classList.remove('active');
-  document.getElementById('lightbox-info').innerHTML = '';
-
-  // Return focus to trigger element
-  if (triggerElement) {
-    triggerElement.focus();
-    triggerElement = null;
+    caption.replaceChildren(...info.cloneNode(true).childNodes);
+    dialog.showModal();
   }
 }

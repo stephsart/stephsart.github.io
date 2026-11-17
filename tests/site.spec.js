@@ -1,6 +1,15 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+// Keep the suite independent of third-party servers. The Google Fonts stylesheet
+// blocks rendering and scripts until it answers, so a slow response stalls tests.
+test.beforeEach(async ({ context }) => {
+  await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
+});
+
+const firstPainting = (page) => page.locator('.artwork').first().locator('.artwork-image');
+const lightbox = (page) => page.getByRole('dialog');
+
 // --- Navigation ---
 
 test.describe('Navigation', () => {
@@ -8,29 +17,35 @@ test.describe('Navigation', () => {
     await page.goto('/');
   });
 
-  test('hamburger toggles overlay and aria-expanded', async ({ page }) => {
+  test('hamburger toggles the menu and moves focus into it', async ({ page }) => {
     const hamburger = page.getByRole('button', { name: 'Toggle navigation' });
+    const overlay = page.locator('.nav-overlay');
     await expect(hamburger).toHaveAttribute('aria-expanded', 'false');
 
     await hamburger.click();
     await expect(hamburger).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.locator('.nav-overlay')).toHaveClass(/active/);
+    await expect(overlay).toHaveClass(/active/);
+    await expect(page.getByRole('link', { name: 'Home' })).toBeFocused();
 
     await hamburger.click();
     await expect(hamburger).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.locator('.nav-overlay')).not.toHaveClass(/active/);
+    await expect(overlay).not.toHaveClass(/active/);
   });
 
-  test('nav links scroll to sections', async ({ page }) => {
-    const hamburger = page.getByRole('button', { name: 'Toggle navigation' });
-    await hamburger.click();
+  test('links in the closed menu cannot be reached', async ({ page }) => {
+    await expect(page.locator('.nav-overlay a').first()).toBeHidden();
+  });
+
+  test('a menu link closes the menu and scrolls to its section', async ({ page }) => {
+    await page.getByRole('button', { name: 'Toggle navigation' }).click();
     await page.getByRole('link', { name: 'About' }).click();
 
-    // Menu should close
     await expect(page.locator('.nav-overlay')).not.toHaveClass(/active/);
+    await expect(page).toHaveURL(/#about$/);
+    await expect(page.getByRole('heading', { name: 'About the Artist' })).toBeInViewport();
   });
 
-  test('Escape closes menu and returns focus to hamburger', async ({ page }) => {
+  test('Escape closes the menu and returns focus to the hamburger', async ({ page }) => {
     const hamburger = page.getByRole('button', { name: 'Toggle navigation' });
     await hamburger.click();
     await expect(page.locator('.nav-overlay')).toHaveClass(/active/);
@@ -46,109 +61,153 @@ test.describe('Navigation', () => {
 test.describe('Lightbox', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // Scroll the last artwork (Blue Lungs) into view so IntersectionObserver triggers
-    await page.locator('.artwork:last-child').scrollIntoViewIfNeeded();
-    await page.locator('.artwork:last-child.visible').waitFor();
+    await firstPainting(page).click();
+    await expect(lightbox(page)).toBeVisible();
   });
 
-  test('real image opens lightbox with correct alt text', async ({ page }) => {
-    const artworkBtn = page.locator('.artwork:last-child .artwork-image');
-    await artworkBtn.click();
-
-    const lightbox = page.locator('.lightbox');
-    await expect(lightbox).toHaveClass(/active/);
-
-    const lightboxImg = page.locator('#lightbox-img');
-    await expect(lightboxImg).toHaveAttribute('alt', /Lungs filled with Blue Smoke/);
+  test('shows the painting with its alt text, title and details', async ({ page }) => {
+    await expect(lightbox(page).getByRole('img')).toHaveAttribute('alt', /Lungs filled with Blue Smoke/);
+    await expect(lightbox(page).getByRole('heading')).toHaveText('Lungs filled with Blue Smoke');
+    await expect(lightbox(page)).toContainText('Acrylic on Canvas');
+    await expect(lightbox(page)).toContainText('2025');
   });
 
-  test('lightbox shows artwork title and details', async ({ page }) => {
-    await page.locator('.artwork:last-child .artwork-image').click();
-    await expect(page.locator('.lightbox')).toHaveClass(/active/);
-
-    const lightboxInfo = page.locator('#lightbox-info');
-    await expect(lightboxInfo).toContainText('Lungs filled with Blue Smoke');
-    await expect(lightboxInfo).toContainText('Acrylic on Canvas');
+  test('replaces the grid image with a large one', async ({ page }) => {
+    const image = lightbox(page).getByRole('img');
+    await expect(image).toHaveAttribute('srcset', /blue-lungs-2000\.webp 2000w/);
+    // The grid shows the 480px file on desktop; the lightbox must pick a larger one.
+    await expect
+      .poll(() => image.evaluate((el) => el.currentSrc))
+      .toMatch(/blue-lungs-(960|1440|2000)\.webp$/);
   });
 
-  test('placeholder does not open lightbox', async ({ page }) => {
-    // Click the first artwork (placeholder)
-    await page.locator('.artwork-image').first().click();
-    const lightbox = page.locator('.lightbox');
-    await expect(lightbox).not.toHaveClass(/active/);
-  });
-
-  test('Escape closes lightbox', async ({ page }) => {
-    await page.locator('.artwork:last-child .artwork-image').click();
-    await expect(page.locator('.lightbox')).toHaveClass(/active/);
-
+  test('Escape closes it', async ({ page }) => {
     await page.keyboard.press('Escape');
-    await expect(page.locator('.lightbox')).not.toHaveClass(/active/);
+    await expect(lightbox(page)).toBeHidden();
   });
 
-  test('close button closes lightbox', async ({ page }) => {
-    await page.locator('.artwork:last-child .artwork-image').click();
-    await expect(page.locator('.lightbox')).toHaveClass(/active/);
-
+  test('the close button closes it', async ({ page }) => {
     await page.getByRole('button', { name: 'Close lightbox' }).click();
-    await expect(page.locator('.lightbox')).not.toHaveClass(/active/);
+    await expect(lightbox(page)).toBeHidden();
   });
 
-  test('focus returns to trigger after close', async ({ page }) => {
-    const artworkBtn = page.locator('.artwork:last-child .artwork-image');
-    await artworkBtn.click();
-    await expect(page.locator('.lightbox')).toHaveClass(/active/);
+  test('a click on the backdrop closes it', async ({ page }) => {
+    await lightbox(page).click({ position: { x: 5, y: 5 } });
+    await expect(lightbox(page)).toBeHidden();
+  });
 
+  test('a click on the painting keeps it open', async ({ page }) => {
+    await lightbox(page).getByRole('img').click();
+    await expect(lightbox(page)).toBeVisible();
+  });
+
+  test('focus starts on the close button and cannot reach the page behind', async ({ page }) => {
+    await expect(page.getByRole('button', { name: 'Close lightbox' })).toBeFocused();
+
+    // Tabbing may pass through the browser's own controls, but never the inert page.
+    for (let i = 0; i < 4; i++) {
+      await page.keyboard.press('Tab');
+      const focusLeaked = await page.evaluate(() => {
+        const active = document.activeElement;
+        return active !== document.body && !active.closest('#lightbox');
+      });
+      expect(focusLeaked).toBe(false);
+    }
+  });
+
+  test('focus returns to the painting after closing', async ({ page }) => {
     await page.keyboard.press('Escape');
-    await expect(artworkBtn).toBeFocused();
+    await expect(firstPainting(page)).toBeFocused();
+  });
+});
+
+// --- Images ---
+
+test.describe('Images', () => {
+  test('every image the gallery references exists', async ({ page, request }) => {
+    await page.goto('/');
+
+    const urls = await page.locator('.artwork-image').evaluateAll((links) => {
+      const fromSrcset = (srcset) => srcset.split(',').map((candidate) => candidate.trim().split(' ')[0]);
+      return [
+        ...new Set(
+          links.flatMap((link) => {
+            const img = link.querySelector('img');
+            return [
+              link.getAttribute('href'),
+              img.getAttribute('src'),
+              ...fromSrcset(link.dataset.srcset),
+              ...fromSrcset(img.getAttribute('srcset')),
+            ];
+          })
+        ),
+      ];
+    });
+
+    expect(urls.length).toBeGreaterThan(0);
+    for (const url of urls) {
+      const response = await request.get(url);
+      expect(response.ok(), url).toBe(true);
+      expect(response.headers()['content-type'], url).toContain('image/webp');
+    }
   });
 
-  test('focus trap keeps focus on close button', async ({ page }) => {
-    await page.locator('.artwork:last-child .artwork-image').click();
-    const closeBtn = page.getByRole('button', { name: 'Close lightbox' });
-    await expect(closeBtn).toBeFocused();
+  test('the link-preview image exists', async ({ page, request }) => {
+    await page.goto('/');
+    const content = await page.locator('meta[property="og:image"]').getAttribute('content');
+    const response = await request.get(new URL(content).pathname);
+    expect(response.ok()).toBe(true);
+  });
 
-    await page.keyboard.press('Tab');
-    await expect(closeBtn).toBeFocused();
+  test('gallery images have alt text', async ({ page }) => {
+    await page.goto('/');
+    for (const image of await page.locator('.artwork-image img').all()) {
+      await expect(image).toHaveAttribute('alt', /\S/);
+    }
   });
 });
 
 // --- Accessibility ---
 
 test.describe('Accessibility', () => {
+  // Reduced motion shows the whole page at once, so axe checks every section
+  // instead of only what has scrolled into view.
+  test.use({ contextOptions: { reducedMotion: 'reduce' } });
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
 
-  test('skip link becomes visible on focus', async ({ page }) => {
+  test('skip link is the first focusable element', async ({ page }) => {
     await page.keyboard.press('Tab');
-    const skipLink = page.locator('.skip-link');
-    await expect(skipLink).toBeFocused();
+    await expect(page.locator('.skip-link')).toBeFocused();
   });
 
-  test('no axe-core violations', async ({ page }) => {
-    // Wait for fade-in animations to complete (they set opacity via animation)
-    await page.waitForTimeout(2000);
-    const results = await new AxeBuilder({ page })
-      .exclude('.placeholder-image') // Placeholders are temporary
-      .exclude('.artwork:not(.visible)') // Not yet scrolled into view
-      .analyze();
+  test('page has no axe-core violations', async ({ page }) => {
+    const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
   });
 
-  test('images have alt text', async ({ page }) => {
-    const images = page.locator('.artwork-image img');
-    const count = await images.count();
-    for (let i = 0; i < count; i++) {
-      const alt = await images.nth(i).getAttribute('alt');
-      expect(alt).toBeTruthy();
-    }
+  test('open lightbox has no axe-core violations', async ({ page }) => {
+    await firstPainting(page).click();
+    await expect(lightbox(page)).toHaveCSS('opacity', '1'); // fade-in finished
+
+    const results = await new AxeBuilder({ page }).include('#lightbox').analyze();
+    expect(results.violations).toEqual([]);
   });
 
-  test('lightbox close is a button with aria-label', async ({ page }) => {
-    const closeBtn = page.locator('.lightbox-close');
-    await expect(closeBtn).toHaveAttribute('aria-label', 'Close lightbox');
-    expect(await closeBtn.evaluate((el) => el.tagName.toLowerCase())).toBe('button');
+  test('content is visible without waiting for scroll animations', async ({ page }) => {
+    await expect(page.locator('.about-content')).toHaveCSS('opacity', '1');
+  });
+});
+
+test.describe('Without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('content is visible and paintings link to their large image', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.about-content')).toHaveCSS('opacity', '1');
+    await expect(firstPainting(page)).toHaveAttribute('href', /blue-lungs-2000\.webp$/);
   });
 });
 
@@ -184,6 +243,13 @@ test.describe('SEO', () => {
     const canonical = page.locator('link[rel="canonical"]');
     await expect(canonical).toHaveAttribute('href', 'https://stephsart.github.io/');
   });
+
+  test('sitemap named in robots.txt exists', async ({ request }) => {
+    const robots = await (await request.get('/robots.txt')).text();
+    const sitemap = robots.match(/^Sitemap:\s*(\S+)/m)[1];
+    const response = await request.get(new URL(sitemap).pathname);
+    expect(response.ok()).toBe(true);
+  });
 });
 
 // --- Smoke ---
@@ -198,13 +264,46 @@ test.describe('Smoke', () => {
 
   test('gallery renders 6 artworks', async ({ page }) => {
     await page.goto('/');
-    const artworks = page.locator('.artwork');
-    await expect(artworks).toHaveCount(6);
+    await expect(page.locator('.artwork')).toHaveCount(6);
   });
 
-  test('footer has copyright', async ({ page }) => {
+  test('footer has copyright and contact link', async ({ page }) => {
     await page.goto('/');
     const footer = page.locator('footer');
     await expect(footer).toContainText('© 2026 Stephanie Kleine');
+    await expect(footer.getByRole('link', { name: 'stephanie@kleine.me' })).toHaveAttribute(
+      'href',
+      'mailto:stephanie@kleine.me'
+    );
+  });
+});
+
+// --- Header and scroll-to-top ---
+
+test.describe('Header and scroll-to-top', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  test('scroll-to-top button appears after scrolling past the hero', async ({ page }) => {
+    const button = page.locator('#scroll-to-top');
+    await expect(button).toBeHidden();
+
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
+    await expect(button).toBeVisible();
+  });
+
+  test('header gets a background on scroll', async ({ page }) => {
+    const nav = page.locator('#floating-nav');
+    await expect(nav).not.toHaveClass(/scrolled/);
+
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
+    await expect(nav).toHaveClass(/scrolled/);
+  });
+
+  test('site logo is visible', async ({ page }) => {
+    const logo = page.locator('.site-logo');
+    await expect(logo).toBeVisible();
+    await expect(logo).toHaveText('SK');
   });
 });
